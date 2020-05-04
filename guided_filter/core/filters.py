@@ -28,7 +28,7 @@ def _downSample(I, scale=4, shape=None):
         return cv2.resize(I, (w, h), interpolation=cv2.INTER_NEAREST)
 
     h, w = I.shape[:2]
-    return cv2.resize(I, (w / scale, h / scale), interpolation=cv2.INTER_NEAREST)
+    return cv2.resize(I, (int(w / scale), int(h / scale)), interpolation=cv2.INTER_NEAREST)
 
 
 ## Return up sampled image.

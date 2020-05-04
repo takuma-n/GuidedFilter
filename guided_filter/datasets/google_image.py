@@ -17,7 +17,7 @@
 
 import json
 import os
-import urllib2
+from urllib.request import urlopen
 import httplib2
 
 import cv2
@@ -91,7 +91,7 @@ class GoogleImageLoader:
         google_api = "http://ajax.googleapis.com/ajax/services/search/images?q={0}&v=1.0&rsz=large&start={1}&imgc=color"
 
         for i in range((num_images / 8) + 1):
-            res = urllib2.urlopen(google_api.format(keyword, i * 8))
+            res = urlopen(google_api.format(keyword, i * 8))
             page_data = json.load(res)
             page_urls = [result["url"] for result in page_data["responseData"]["results"]]
             image_urls.extend(page_urls)
@@ -102,7 +102,7 @@ class GoogleImageLoader:
         return image_urls
 
     def downloadImages(self):
-        print "  Download"
+        print("  Download")
         data_name = self._keyword
         image_urls = self._image_urls
         data_dir = self._data_dir
@@ -120,7 +120,7 @@ class GoogleImageLoader:
 
                 if not self._update:
                     if os.path.exists(data_filepath):
-                        print "  - Skip: %s" % data_filename
+                        print("  - Skip: {}").format(data_filename)
                         continue
 
                 response, content = http.request(image_urls[i])
@@ -128,12 +128,12 @@ class GoogleImageLoader:
                 with open(data_filepath, 'wb') as data_file:
                     data_file.write(content)
 
-                    print "  - Done: %s" % data_filename
+                    print("  - Done: {}").format(data_filename)
             except:
                 continue
 
     def postResize(self):
-        print "  Post resize"
+        print("  Post resize")
         data_name = self._keyword
         data_files = dataFiles(data_name)
 
@@ -143,7 +143,7 @@ class GoogleImageLoader:
 
             if C_8U is None:
                 os.remove(data_file)
-                print "  - Delete: %s" % data_filename
+                print("  - Delete: {}").format(data_filename)
                 continue
             h, w = C_8U.shape[0:2]
 
@@ -156,7 +156,7 @@ class GoogleImageLoader:
 
             C_8U_small = cv2.resize(C_8U, (w_opt, h_opt))
             saveRGB(data_file, C_8U_small)
-            print "  - Resized: %s" % data_filename
+            print("  - Resized: {}").format(data_filename)
 
 
 ## Create dataset for the given data_name.
@@ -169,7 +169,8 @@ def createDatasets(data_names=["apple", "banana", "sky", "tulip", "flower"],
                    num_images=10,
                    update=False):
     for data_name in data_names:
-        print "Create datasets: %s" % data_name
+        if len(data_name) != 0:
+            print("Create datasets: {}").format(data_name)
         createDataset(data_name, num_images, update)
 
 

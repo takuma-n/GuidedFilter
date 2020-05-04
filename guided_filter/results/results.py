@@ -20,5 +20,5 @@ def resultFile(image_name, image_ext=".png"):
     return result_file
 
 if __name__ == '__main__':
-    print resultDir()
-    print resultFile("testImage")
+    print(resultDir())
+    print(resultFile("testImage"))

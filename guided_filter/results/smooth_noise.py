@@ -18,6 +18,33 @@ from guided_filter.cv.image import to32F
 
 from guided_filter.core.filters import FastGuidedFilter, GuidedFilter
 
+import cv2
+
+def run(src_path, label_path, sigmas, epsilon=0.02, same=False):
+    src_name = os.path.basename(src_path)
+    src_name = os.path.splitext(src_name)[0]
+    label_name = os.path.basename(label_path)
+    label_name = os.path.splitext(label_name)[0]
+
+    src_C_8U = loadRGB(src_path)
+    src_C_32F = to32F(src_C_8U)
+    
+    label_C_8U = loadRGB(label_path)
+    label_C_32F = to32F(label_C_8U)
+
+    os.makedirs('./output/', exist_ok=True)
+    
+    for sigma in sigmas:
+        print(sigma)
+        for eps in epsilon:
+            if same:
+                guided_filter = GuidedFilter(label_C_32F, radius=sigma, epsilon=eps)
+            else:
+                guided_filter = GuidedFilter(src_C_32F, radius=sigma, epsilon=eps)
+            result = guided_filter.filter(label_C_32F)
+            cv2.imwrite('./output/{}_radius{}_eps{:.03f}.png'.format(label_name, sigma, eps),
+                cv2.cvtColor(result*255, cv2.COLOR_RGB2GRAY))        
+
 def runSmoothNoiseResult(image_file):
     image_name = os.path.basename(image_file)
     image_name = os.path.splitext(image_name)[0]
@@ -70,9 +97,9 @@ def runSmoothNoiseResult(image_file):
 
 def runSmoothNoiseResults(data_names, data_ids):
     for data_name in data_names:
-        print "Smooth noise: %s" % data_name
+        print("Smooth noise: {}").format(data_name)
         for data_id in data_ids:
-            print "Data ID: %s" % data_id
+            print("Data ID: {}").format(data_id)
             image_file = dataFile(data_name, data_id)
             runSmoothNoiseResult(image_file)
 
